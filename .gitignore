@@ -1,5 +1,6 @@
 # python
 *.pyc
+__pycache__
 
 # generic
 *.DS_Store
@@ -7,3 +8,7 @@
 *.swp
 *.out
 *.lock
+
+# virtualenv
+env
+venv
