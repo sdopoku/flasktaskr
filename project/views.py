@@ -114,7 +114,7 @@ def complete(task_id):
 
 
 # Delete Tasks
-@app.route('delete/<int:task_id>/')
+@app.route('/delete/<int:task_id>/')
 @login_required
 def delete_entry(task_id):
     g.db = connect_db()
