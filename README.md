@@ -13,7 +13,7 @@ This is a simple To-do list application built with Flask
 - [x] User Login/Authentication
 - [x] Database Relationships
 - [x] Managing Sessions
-- [ ] Error Handling
+- [x] Error Handling
 - [ ] Unit Testing
 - [ ] Styling
 - [ ] Test Coverage
