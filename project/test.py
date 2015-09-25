@@ -36,8 +36,19 @@ class AllTests(unittest.TestCase):
     ######### helper methods ########
     #################################
 
+    # login helper method
     def login(self, name, password):
         return self.app.post('/', data=dict(name=name, password=password), follow_redirects=True)
+
+    # register helper method
+    def register(self, name, email, password, confirm):
+        return self.app.post(
+            'register/',
+            data=dict(name=name, email=email, password=password, confirm=confirm),
+            follow_redirects=True
+        )
+
+
 
     # each test should start with 'test'
     def test_user_setup(self):
@@ -61,6 +72,13 @@ class AllTests(unittest.TestCase):
     def test_users_cannot_login_unless_registered(self):
         response = self.login('foo', 'bar')
         self.assertIn(b'Invalid username or password.', response.data)
+
+
+    # registered users can login (form validation)
+    def test_users_can_login(self):
+        self.register('David', 'david@adoore.org', 'python', 'python')
+        response = self.login('David', 'python')
+        self.assertIn('Welcome to FlaskTaskr', response.data)
 
 if __name__ == "__main__":
     unittest.main()
