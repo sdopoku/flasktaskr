@@ -105,7 +105,7 @@ def new_task():
             )
             db.session.add(new_task)
             db.session.commit()
-            flash('New entry was succesfully posted. Thanks.')
+            flash('New entry was successfully posted. Thanks.')
             return redirect(url_for('tasks'))
         # else:
         #     return render_template('tasks.html', form=form, error=error)

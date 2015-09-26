@@ -53,6 +53,24 @@ class AllTests(unittest.TestCase):
         return self.app.get('logout/', follow_redirects=True)
 
 
+    # create user helper method
+    def create_user(self, name, email, password):
+        new_user = User(name=name, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+
+    # create task helper method
+    def create_task(self):
+        return self.app.post('add/', data=dict(
+            name ='Go to the bank',
+            due_date = '02/05/2014',
+            priority = '1',
+            posted_date = '02/04/2014',
+            status = '1'
+        ), follow_redirects=True)
+
+
     ###################################
     ############# test  ###############
     ###################################
@@ -140,6 +158,68 @@ class AllTests(unittest.TestCase):
     def test_not_logged_in_users_cannot_access_tasks_page(self):
         response = self.app.get('tasks/', follow_redirects=True)
         self.assertIn(b'You need to login first.', response.data)
+
+
+    # test that user can add tasks
+    def test_users_can_add_tasks(self):
+        self.create_user('Ranger', 'ranger@adoorelabs.com', 'python')
+        self.login('Ranger', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.assertIn(
+            b'New entry was successfully posted. Thanks.', response.data
+        )
+
+
+    # test that users cannot add tasks when there is an error
+    def test_users_cannot_add_tasks_when_error(self):
+        self.create_user('Ranger', 'ranger@adoorelabs.com', 'python')
+        self.login('Ranger', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.post('add/', data=dict(
+            name = 'Go to the bank',
+            due_date ='',
+            priority='1',
+            posted_date='02/05/2014',
+            status='1',
+        ), follow_redirects=True)
+        self.assertIn(b'This field is required.', response.data)
+
+
+    # test that users can complete tasks
+    def test_users_can_complete_tasks(self):
+        self.create_user('Ranger', 'ranger@adoorelabs.com', 'python')
+        self.login('Ranger', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task()
+        response = self.app.get("complete/1", follow_redirects=True)
+        self.assertIn(b'The task is complete. Nice.', response.data)
+
+
+    # test that users can delete tasks
+    def test_users_can_delete_tasks(self):
+        self.create_user('Ranger', 'ranger@adoorelabs.com', 'python')
+        self.login('Ranger', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task()
+        response = self.app.get("delete/1/", follow_redirects=True)
+        self.assertIn(b'The task was deleted.', response.data)
+
+
+    # test that users cannot complete tasks that are not created by them
+    def test_users_cannot_complete_tasks_that_are_not_created_by_them(self):
+        self.create_user('Ranger', 'ranger@adoorelabs.com', 'python')
+        self.login('Ranger', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task()
+        self.logout()
+        self.create_user('Davisclex', 'davisclex@adoorelabs.com', 'python101')
+        self.login('Davisclex', 'python101')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.get("complete/1/", follow_redirects=True)
+        self.assertNotIn(
+            b'The task is complete. Nice.', response.data
+        )
 
 if __name__ == "__main__":
     unittest.main()
