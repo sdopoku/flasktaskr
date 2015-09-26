@@ -135,5 +135,11 @@ class AllTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Add a new task:', response.data)
 
+
+    # test that users not logged in cannot access tasks page
+    def test_not_logged_in_users_cannot_access_tasks_page(self):
+        response = self.app.get('tasks/', follow_redirects=True)
+        self.assertIn(b'You need to login first.', response.data)
+
 if __name__ == "__main__":
     unittest.main()
