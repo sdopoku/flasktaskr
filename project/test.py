@@ -49,6 +49,10 @@ class AllTests(unittest.TestCase):
         )
 
 
+    def logout(self):
+        return self.app.get('logout/', follow_redirects=True)
+
+
     ###################################
     ############# test  ###############
     ###################################
@@ -105,6 +109,13 @@ class AllTests(unittest.TestCase):
         response = self.register(
             'DavidOpoku', 'david@meltwater.org', 'python', 'python')
         self.assertIn(b'That username and/or email already exist.', response.data)
+
+
+    def test_logged_in_users_can_logout(self):
+        self.register('Ranger', 'ranger@adoorelabs.com', 'python101', 'python101')
+        self.login('Ranger', 'python101')
+        response = self.logout()
+        self.assertIn(b'Goodbye!', response.data)
 
 if __name__ == "__main__":
     unittest.main()
