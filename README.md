@@ -14,7 +14,7 @@ This is a simple To-do list application built with Flask
 - [x] Database Relationships
 - [x] Managing Sessions
 - [x] Error Handling
-- [ ] Unit Testing
+- [x] Unit Testing
 - [ ] Styling
 - [ ] Test Coverage
 - [ ] Nose Testing Framework
