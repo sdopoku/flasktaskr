@@ -33,7 +33,7 @@ class AllTests(unittest.TestCase):
         db.drop_all()
 
     #################################
-    ######### helper methods ########
+    ######## helper methods  ########
     #################################
 
     # login helper method
@@ -49,7 +49,9 @@ class AllTests(unittest.TestCase):
         )
 
 
-
+    ###################################
+    ############# test  ###############
+    ###################################
     # each test should start with 'test'
     def test_user_setup(self):
         new_user = User("david", "david@meltwater.org", "davidopoku")
@@ -79,6 +81,30 @@ class AllTests(unittest.TestCase):
         self.register('David', 'david@adoore.org', 'python', 'python')
         response = self.login('David', 'python')
         self.assertIn('Welcome to FlaskTaskr', response.data)
+
+
+    # show error for invalid form data
+    def test_invalid_form_data(self):
+        self.register('David', 'david@meltwater.org', 'python', 'python')
+        response = self.login('alert("alert box!");', 'foo')
+        self.assertIn(b'Invalid username or password.', response.data)
+
+
+    # form is present on register page
+    def test_form_is_present_on_register_page(self):
+        response = self.app.get('register/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Please register to access the task list.', response.data)
+
+
+    # users can register (form validation)
+    def test_user_registration_error(self):
+        self.app.get('register/', follow_redirects=True)
+        self.register('DavidOpoku', 'david@meltwater.org', 'python', 'python')
+        self.app.get('register/', follow_redirects=True)
+        response = self.register(
+            'DavidOpoku', 'david@meltwater.org', 'python', 'python')
+        self.assertIn(b'That username and/or email already exist.', response.data)
 
 if __name__ == "__main__":
     unittest.main()
