@@ -124,5 +124,16 @@ class AllTests(unittest.TestCase):
         response = self.logout()
         self.assertNotIn(b'Goodbye!', response.data)
 
+
+    # logged in users can access tasks page
+    def test_logged_in_users_can_access_tasks_page(self):
+        self.register(
+            'Ranger', 'ranger@adoorelabs.com', 'python101', 'python101'
+        )
+        self.login('Ranger', 'python101')
+        response = self.app.get('tasks/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Add a new task:', response.data)
+
 if __name__ == "__main__":
     unittest.main()
